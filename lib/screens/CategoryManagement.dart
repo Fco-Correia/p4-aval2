@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class CategoryManagement extends StatefulWidget {
-  final Function onCategoryUpdated; // Função a ser chamada
+  final Function onCategoryUpdated;
 
   const CategoryManagement({super.key, required this.onCategoryUpdated});
 
