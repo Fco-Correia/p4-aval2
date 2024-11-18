@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/screens/Home.dart';
+import '../screens/Home.dart';
 void main() {
   runApp(MyApp());
 }
@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const Home(),
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Color.fromARGB(255, 18, 18, 18),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 18, 18),
         appBarTheme: const AppBarTheme(
-          backgroundColor: const Color.fromARGB(255, 91, 56, 187),
+          backgroundColor: Color.fromARGB(255, 91, 56, 187),
           titleTextStyle: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
