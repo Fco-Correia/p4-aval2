@@ -346,7 +346,7 @@ class _HomeState extends State<Home> {
               itemBuilder: (context, index) {
                 if (index == filteredTasks.length) {
                   // Adiciona o espaço ao final da lista
-                  return SizedBox(
+                  return const SizedBox(
                     height:
                         80,
                   );
