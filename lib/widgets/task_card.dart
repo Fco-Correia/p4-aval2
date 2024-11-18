@@ -5,7 +5,7 @@ class TaskCard extends StatelessWidget {
   final Task task;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final VoidCallback onToggleComplete; // Nova função para marcar/desmarcar
+  final VoidCallback onToggleComplete;
 
   const TaskCard({
     super.key,
@@ -71,9 +71,9 @@ class TaskCard extends StatelessWidget {
             const SizedBox(height: 4),
             // Categoria exibida aqui
             Text(
-              'Categoria: ${task.category}', // Ajuste para refletir a categoria
+              'Categoria: ${task.category}',
               style: const TextStyle(
-                color: Colors.grey, // Cor para destacar a categoria
+                color: Colors.grey,
               ),
             ),
             const SizedBox(height: 4),
@@ -111,7 +111,7 @@ class TaskCard extends StatelessWidget {
                     : Icons.check_circle_outline,
                 color: task.isCompleted ? Colors.green : Colors.grey,
               ),
-              onPressed: onToggleComplete, // Chama a função de completar tarefa
+              onPressed: onToggleComplete,
             ),
           ],
         ),
