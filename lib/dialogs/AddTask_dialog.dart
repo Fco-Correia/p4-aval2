@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todolist/models/task.dart';
+import '../models/task.dart';
 
 void AddTask_dialog(
   BuildContext context,
