@@ -14,14 +14,14 @@ Future<void> Confirmation_dialog(
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            Navigator.pop(context); // Fecha o diálogo
+            Navigator.pop(context);
           },
           child: const Text('Cancelar'),
         ),
         TextButton(
           onPressed: () {
-            onConfirm(); // Chama a função de confirmação
-            Navigator.pop(context); // Fecha o diálogo
+            onConfirm();
+            Navigator.pop(context);
           },
           child: const Text('Confirmar'),
         ),
