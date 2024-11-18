@@ -50,7 +50,7 @@ void showImportantTasksDialog(BuildContext context, List<Task> tasks) {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // Fecha o diálogo
+              Navigator.of(context).pop();
             },
             child: const Text('Fechar'),
           ),
