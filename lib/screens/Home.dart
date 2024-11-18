@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _fetchCategoriesFromFirebase();
-    _fetchTasksFromFirebase(); // Busca as tarefas ao iniciar.
+    _fetchTasksFromFirebase();
   }
 
   // Função que busca as categorias do Firebase
@@ -77,7 +77,7 @@ class _HomeState extends State<Home> {
 
           data.forEach((key, taskData) {
             fetchedTasks.add(Task(
-              key: key, // Captura a chave aqui
+              key: key,
               title: taskData['title'] ?? 'Sem título',
               description: taskData['description'] ?? '',
               category: taskData['category'] ?? 'Sem Categoria',
@@ -88,7 +88,7 @@ class _HomeState extends State<Home> {
           });
 
           setState(() {
-            tasks = fetchedTasks; // Atualiza a lista local.
+            tasks = fetchedTasks;
           });
         }
       } else {
@@ -126,9 +126,9 @@ class _HomeState extends State<Home> {
       title: 'Confirmar exclusão',
       content: 'Você tem certeza que deseja excluir esta tarefa?',
       onConfirm: () async {
-        await _deleteTaskFromFirebase(task); // Remove do Firebase.
+        await _deleteTaskFromFirebase(task);
         setState(() {
-          tasks.remove(task); // Remove localmente.
+          tasks.remove(task);
         });
       },
     );
@@ -148,7 +148,7 @@ class _HomeState extends State<Home> {
             priorityOrder[a.priority]!.compareTo(priorityOrder[b.priority]!);
 
         if (priorityComparison != 0) {
-          return priorityComparison; // Se as prioridades forem diferentes, usa essa ordem
+          return priorityComparison;
         }
 
         // Se as prioridades forem iguais, compara as datas (mais recentes primeiro)
@@ -184,7 +184,6 @@ class _HomeState extends State<Home> {
       );
 
       if (response.statusCode == 200) {
-        // Captura a chave gerada pelo Firebase
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         final newTask = Task(
@@ -280,7 +279,7 @@ class _HomeState extends State<Home> {
                     MaterialPageRoute(
                       builder: (context) => CategoryManagement(
                         onCategoryUpdated:
-                            _fetchCategoriesFromFirebase, // Passando a função
+                            _fetchCategoriesFromFirebase,
                       ),
                     ),
                   );
@@ -343,16 +342,16 @@ class _HomeState extends State<Home> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredTasks.length + 1, // Aumenta o itemCount em 1
+              itemCount: filteredTasks.length + 1,
               itemBuilder: (context, index) {
                 if (index == filteredTasks.length) {
                   // Adiciona o espaço ao final da lista
                   return SizedBox(
                     height:
-                        80, // Altura suficiente para evitar que os FABs tampe as tasks
+                        80,
                   );
                 }
-                // Retorna o TaskCard para os índices normais
+                
                 return TaskCard(
                   task: filteredTasks[index],
                   onEdit: () => _editTask(filteredTasks[index]),
@@ -399,11 +398,11 @@ class _HomeState extends State<Home> {
                       priority: priority,
                       isCompleted: false, // Tarefa inicia como incompleta
                     );
-                    // Envia a tarefa para o Firebase
+                    
                     _addTaskToFirebase(newTask);
                   },
                   availableCategories:
-                      categories, // Passando a lista de categorias
+                      categories,
                   isEditMode: false,
                   task: null,
                 );
