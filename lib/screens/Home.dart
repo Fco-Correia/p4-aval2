@@ -14,7 +14,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<Space> spaces = [];
-  
+
   String currentFilter = 'Nenhum';
   bool showOnlyIncomplete = false;
 
@@ -28,30 +28,24 @@ class _HomeState extends State<Home> {
     return [
       Space(
         key: '1',
-        title: 'Espaço 1',
-        description: 'Descrição do espaço 1',
-        category: 'Categoria 1',
-        dueDate: '2025-01-15',
-        priority: 'Alto',
-        isCompleted: false,
+        nomeEspaco: 'Espaço 1',
+        capacidade: 10,
+        disponibilidade: '3 horários disponíveis',
+        status: 'Ativo',
       ),
       Space(
         key: '2',
-        title: 'Espaço 2',
-        description: 'Descrição do espaço 2',
-        category: 'Categoria 2',
-        dueDate: '2025-01-18',
-        priority: 'Médio',
-        isCompleted: true,
+        nomeEspaco: 'Espaço 2',
+        capacidade: 20,
+        disponibilidade: '5 horários disponíveis',
+        status: 'Inativo',
       ),
       Space(
         key: '3',
-        title: 'Espaço 3',
-        description: 'Descrição do espaço 3',
-        category: 'Categoria 1',
-        dueDate: '2025-01-20',
-        priority: 'Baixo',
-        isCompleted: false,
+        nomeEspaco: 'Espaço 3',
+        capacidade: 15,
+        disponibilidade: '2 horários disponíveis',
+        status: 'Ativo',
       ),
     ];
   }
@@ -72,12 +66,10 @@ class _HomeState extends State<Home> {
           data.forEach((key, spaceData) {
             fetchedSpaces.add(Space(
               key: key,
-              title: spaceData['title'] ?? 'Sem título',
-              description: spaceData['description'] ?? '',
-              category: spaceData['category'] ?? 'Sem Categoria',
-              dueDate: spaceData['dueDate'] ?? '',
-              priority: spaceData['priority'] ?? 'Baixo',
-              isCompleted: spaceData['isCompleted'] ?? false,
+              nomeEspaco: spaceData['nomeEspaco'] ?? 'Sem nome',
+              capacidade: spaceData['capacidade'] ?? 0,
+              disponibilidade: spaceData['disponibilidade'] ?? 'Indisponível',
+              status: spaceData['status'] ?? 'Inativo',
             ));
           });
 
@@ -98,7 +90,16 @@ class _HomeState extends State<Home> {
   }
 
   void _filterSpaces(String filterType) {
-    
+    setState(() {
+      if (filterType == 'Ativo') {
+        spaces.sort((a, b) => a.status == 'Ativo' ? -1 : 1);
+      } else if (filterType == 'Inativo') {
+        spaces.sort((a, b) => a.status == 'Inativo' ? -1 : 1);
+      } else {
+        // Retorna à lista original se o filtro for "Nenhum"
+        spaces = _mockSpaces();
+      }
+    });
   }
 
   Future<void> _addSpaceToFirebase(Space space) async {
@@ -109,12 +110,10 @@ class _HomeState extends State<Home> {
       final response = await http.post(
         Uri.parse(url),
         body: json.encode({
-          'title': space.title,
-          'description': space.description,
-          'category': space.category,
-          'dueDate': space.dueDate,
-          'priority': space.priority,
-          'isCompleted': space.isCompleted,
+          'nomeEspaco': space.nomeEspaco,
+          'capacidade': space.capacidade,
+          'disponibilidade': space.disponibilidade,
+          'status': space.status,
         }),
       );
 
@@ -123,12 +122,10 @@ class _HomeState extends State<Home> {
 
         final newSpace = Space(
           key: responseData['name'], // A chave gerada está no campo 'name'
-          title: space.title,
-          description: space.description,
-          category: space.category,
-          dueDate: space.dueDate,
-          priority: space.priority,
-          isCompleted: space.isCompleted,
+          nomeEspaco: space.nomeEspaco,
+          capacidade: space.capacidade,
+          disponibilidade: space.disponibilidade,
+          status: space.status,
         );
 
         setState(() {
@@ -169,12 +166,10 @@ class _HomeState extends State<Home> {
       final response = await http.put(
         Uri.parse(url),
         body: json.encode({
-          'title': space.title,
-          'description': space.description,
-          'category': space.category,
-          'dueDate': space.dueDate,
-          'priority': space.priority,
-          'isCompleted': space.isCompleted,
+          'nomeEspaco': space.nomeEspaco,
+          'capacidade': space.capacidade,
+          'disponibilidade': space.disponibilidade,
+          'status': space.status,
         }),
       );
 
@@ -188,68 +183,79 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _addMockSpaceToFirebase() {
+    // Criar um espaço fictício para testar
+    final newSpace = Space(
+      key: DateTime.now().toString(), // Gerar uma chave única temporária
+      nomeEspaco: 'Espaço Teste ${DateTime.now().millisecondsSinceEpoch}',
+      capacidade: 10,
+      disponibilidade: 'Disponível',
+      status: 'Ativo',
+    );
+
+    _addSpaceToFirebase(newSpace);
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reservas'),
-        actions: [
-          Row(
-            children: [
-              const Text(
-                'Usuario',
-                style: TextStyle(color: Colors.white, fontSize: 14),
-              ),
-              IconButton(
-                icon: const Icon(Icons.add_circle, color: Colors.white),
-                tooltip: 'Adicionar Categoria',
-                onPressed: () {
-                  // a implementar
-                },
-              )
-            ],
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 20, 15, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+        appBar: AppBar(
+          title: const Text('Reservas'),
+          actions: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    SpaceFilter(
-                      onFilterSelected: _filterSpaces,
-                    ),
-                  ],
+                const Text(
+                  'Usuario',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: Colors.white),
+                  tooltip: 'Adicionar Espaço de Teste',
+                  onPressed: () {
+                    _addMockSpaceToFirebase();
+                  },
+                )
               ],
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: spaces.length + 1,
-              itemBuilder: (context, index) {
-                if (index == spaces.length) {
-                  // Adiciona o espaço ao final da lista
-                  return const SizedBox(
-                    height: 80,
-                  );
-                }
-
-                return SpaceCard(
-                  space: spaces[index],
-                  onEdit: () => _editSpace(spaces[index]),
-                );
-              },
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(25, 20, 15, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    children: [
+                      SpaceFilter(
+                        onFilterSelected: _filterSpaces,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          )
-        ],
-      )
-    );
+            Expanded(
+              child: ListView.builder(
+                itemCount: spaces.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == spaces.length) {
+                    // Adiciona o espaço ao final da lista
+                    return const SizedBox(
+                      height: 80,
+                    );
+                  }
+
+                  return SpaceCard(
+                    space: spaces[index],
+                    onEdit: () => _editSpace(spaces[index]),
+                  );
+                },
+              ),
+            )
+          ],
+        ));
   }
 }

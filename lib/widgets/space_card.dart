@@ -11,14 +11,12 @@ class SpaceCard extends StatelessWidget {
     required this.onEdit,
   });
 
-  Color getPriorityColor(String priority) {
-    switch (priority) {
-      case 'Alto':
-        return Colors.redAccent;
-      case 'Médio':
-        return Colors.amber;
-      case 'Baixo':
+  Color getStatusColor(String status) {
+    switch (status) {
+      case 'Ativo':
         return Colors.greenAccent;
+      case 'Inativo':
+        return Colors.redAccent;
       default:
         return Colors.grey;
     }
@@ -27,64 +25,43 @@ class SpaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: space.isCompleted ? Colors.grey.shade800 : const Color(0xFF1F1F1F),
+      color: space.status == 'Inativo' ? Colors.grey.shade800 : const Color(0xFF1F1F1F),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
       child: ListTile(
         title: Text(
-          space.title,
-          style: TextStyle(
+          space.nomeEspaco, // Exibe o nome do espaço
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
-            decoration: space.isCompleted
-                ? TextDecoration.lineThrough
-                : TextDecoration.none, // Risco no texto
           ),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Exibe a capacidade
             Text(
-              space.description,
-              style: TextStyle(
-                color: Colors.grey,
-                decoration: space.isCompleted
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Vence em: ${space.dueDate}',
-              style: TextStyle(
-                color: Colors.grey,
-                decoration: space.isCompleted
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-              ),
-            ),
-            const SizedBox(height: 4),
-            // Categoria exibida aqui
-            Text(
-              'Categoria: ${space.category}',
+              'Capacidade: ${space.capacidade}',
               style: const TextStyle(
                 color: Colors.grey,
               ),
             ),
             const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: getPriorityColor(space.priority),
-                borderRadius: BorderRadius.circular(10),
+            // Exibe a disponibilidade
+            Text(
+              'Disponibilidade: ${space.disponibilidade}',
+              style: const TextStyle(
+                color: Colors.grey,
               ),
-              child: Text(
-                space.priority,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            const SizedBox(height: 4),
+            // Exibe o status
+            Text(
+              'Status: ${space.status}',
+              style: TextStyle(
+                color: getStatusColor(space.status),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
