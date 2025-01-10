@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import '../dialogs/Confirmation_dialong.dart';
-import '../dialogs/important_dialog.dart';
-import '../dialogs/AddTask_dialog.dart';
-import '../screens/CategoryManagement.dart';
-import '../models/task.dart';
-import '../widgets/category_filter.dart';
-import '../widgets/task_filter.dart';
-import '../widgets/task_card.dart';
+import '../models/space.dart';
+import '../widgets/space_filter.dart';
+import '../widgets/space_card.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -18,24 +13,52 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Task> tasks = [];
-  List<String> categories = ['Todas'];
-
-  String currentCategory = 'Todas';
+  List<Space> spaces = [];
+  
   String currentFilter = 'Nenhum';
   bool showOnlyIncomplete = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchCategoriesFromFirebase();
-    _fetchTasksFromFirebase();
+    spaces = _mockSpaces();
   }
 
-  // Função que busca as categorias do Firebase
-  Future<void> _fetchCategoriesFromFirebase() async {
+  List<Space> _mockSpaces() {
+    return [
+      Space(
+        key: '1',
+        title: 'Espaço 1',
+        description: 'Descrição do espaço 1',
+        category: 'Categoria 1',
+        dueDate: '2025-01-15',
+        priority: 'Alto',
+        isCompleted: false,
+      ),
+      Space(
+        key: '2',
+        title: 'Espaço 2',
+        description: 'Descrição do espaço 2',
+        category: 'Categoria 2',
+        dueDate: '2025-01-18',
+        priority: 'Médio',
+        isCompleted: true,
+      ),
+      Space(
+        key: '3',
+        title: 'Espaço 3',
+        description: 'Descrição do espaço 3',
+        category: 'Categoria 1',
+        dueDate: '2025-01-20',
+        priority: 'Baixo',
+        isCompleted: false,
+      ),
+    ];
+  }
+
+  Future<void> _fetchSpacesFromFirebase() async {
     const url =
-        'https://to-do-list-276e6-default-rtdb.firebaseio.com/categories.json';
+        'https://reservas-45109-default-rtdb.firebaseio.com/spaces.json';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -44,209 +67,121 @@ class _HomeState extends State<Home> {
         final Map<String, dynamic>? data = json.decode(response.body);
 
         if (data != null) {
-          List<String> fetchedCategories = ['Todas'];
+          List<Space> fetchedSpaces = [];
 
-          data.forEach((key, categoryData) {
-            fetchedCategories.add(categoryData['name']);
-          });
-
-          setState(() {
-            categories = fetchedCategories; // Atualiza a lista de categorias.
-          });
-        }
-      } else {
-        print('Erro ao buscar categorias: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Erro ao fazer GET: $error');
-    }
-  }
-
-  Future<void> _fetchTasksFromFirebase() async {
-    const url =
-        'https://to-do-list-276e6-default-rtdb.firebaseio.com/tasks.json';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic>? data = json.decode(response.body);
-
-        if (data != null) {
-          List<Task> fetchedTasks = [];
-
-          data.forEach((key, taskData) {
-            fetchedTasks.add(Task(
+          data.forEach((key, spaceData) {
+            fetchedSpaces.add(Space(
               key: key,
-              title: taskData['title'] ?? 'Sem título',
-              description: taskData['description'] ?? '',
-              category: taskData['category'] ?? 'Sem Categoria',
-              dueDate: taskData['dueDate'] ?? '',
-              priority: taskData['priority'] ?? 'Baixo',
-              isCompleted: taskData['isCompleted'] ?? false,
+              title: spaceData['title'] ?? 'Sem título',
+              description: spaceData['description'] ?? '',
+              category: spaceData['category'] ?? 'Sem Categoria',
+              dueDate: spaceData['dueDate'] ?? '',
+              priority: spaceData['priority'] ?? 'Baixo',
+              isCompleted: spaceData['isCompleted'] ?? false,
             ));
           });
 
           setState(() {
-            tasks = fetchedTasks;
+            spaces = _mockSpaces();
           });
         }
       } else {
-        print('Erro ao buscar tarefas: ${response.statusCode}');
+        print('Erro ao buscar espaços: ${response.statusCode}');
       }
     } catch (error) {
       print('Erro ao fazer GET: $error');
     }
   }
 
-  void _editTask(Task task) {
-    AddTask_dialog(
-      context,
-      isEditMode: true,
-      task: task,
-      availableCategories: categories,
-      (title, description, dueDate, priority, category) {
-        setState(() {
-          task.title = title;
-          task.description = description;
-          task.dueDate = dueDate;
-          task.priority = priority;
-          task.category = category;
-        });
-
-        // Atualiza a tarefa no Firebase
-        _updateTaskInFirebase(task);
-      },
-    );
+  void _editSpace(Space space) {
+    // a Colocar
   }
 
-  void _deleteTask(Task task) {
-    Confirmation_dialog(
-      context,
-      title: 'Confirmar exclusão',
-      content: 'Você tem certeza que deseja excluir esta tarefa?',
-      onConfirm: () async {
-        await _deleteTaskFromFirebase(task);
-        setState(() {
-          tasks.remove(task);
-        });
-      },
-    );
+  void _filterSpaces(String filterType) {
+    
   }
 
-  void _filterTasks(String filterType) {
-    setState(() {
-      currentFilter = filterType;
-    });
-
-    if (filterType == 'Prioridade') {
-      final priorityOrder = {'Alto': 1, 'Médio': 2, 'Baixo': 3};
-
-      tasks.sort((a, b) {
-        // Primeiro, compara as prioridades
-        int priorityComparison =
-            priorityOrder[a.priority]!.compareTo(priorityOrder[b.priority]!);
-
-        if (priorityComparison != 0) {
-          return priorityComparison;
-        }
-
-        // Se as prioridades forem iguais, compara as datas (mais recentes primeiro)
-        return DateTime.parse(a.dueDate).compareTo(DateTime.parse(b.dueDate));
-      });
-    } else if (filterType == 'Data') {
-      tasks.sort((a, b) =>
-          DateTime.parse(a.dueDate).compareTo(DateTime.parse(b.dueDate)));
-    }
-  }
-
-  void _toggleTaskComplete(Task task) {
-    setState(() {
-      task.isCompleted = !task.isCompleted;
-    });
-  }
-
-  Future<void> _addTaskToFirebase(Task task) async {
+  Future<void> _addSpaceToFirebase(Space space) async {
     const url =
-        'https://to-do-list-276e6-default-rtdb.firebaseio.com/tasks.json';
+        'https://reservas-45109-default-rtdb.firebaseio.com/spaces.json';
 
     try {
       final response = await http.post(
         Uri.parse(url),
         body: json.encode({
-          'title': task.title,
-          'description': task.description,
-          'category': task.category,
-          'dueDate': task.dueDate,
-          'priority': task.priority,
-          'isCompleted': task.isCompleted,
+          'title': space.title,
+          'description': space.description,
+          'category': space.category,
+          'dueDate': space.dueDate,
+          'priority': space.priority,
+          'isCompleted': space.isCompleted,
         }),
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
-        final newTask = Task(
+        final newSpace = Space(
           key: responseData['name'], // A chave gerada está no campo 'name'
-          title: task.title,
-          description: task.description,
-          category: task.category,
-          dueDate: task.dueDate,
-          priority: task.priority,
-          isCompleted: task.isCompleted,
+          title: space.title,
+          description: space.description,
+          category: space.category,
+          dueDate: space.dueDate,
+          priority: space.priority,
+          isCompleted: space.isCompleted,
         );
 
         setState(() {
-          tasks.add(newTask);
+          spaces.add(newSpace);
         });
 
-        print('Tarefa adicionada com sucesso!');
+        print('Espaço adicionado com sucesso!');
       } else {
-        print('Erro ao adicionar tarefa: ${response.statusCode}');
+        print('Erro ao adicionar espaço: ${response.statusCode}');
       }
     } catch (error) {
       print('Erro ao fazer POST: $error');
     }
   }
 
-  Future<void> _deleteTaskFromFirebase(Task task) async {
+  Future<void> _deleteSpaceFromFirebase(Space space) async {
     final url =
-        'https://to-do-list-276e6-default-rtdb.firebaseio.com/tasks/${task.key}.json';
+        'https://reservas-45109-default-rtdb.firebaseio.com/spaces/${space.key}.json';
 
     try {
       final response = await http.delete(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        print('Tarefa excluída com sucesso!');
+        print('Espaço excluído com sucesso!');
       } else {
-        print('Erro ao excluir tarefa: ${response.statusCode}');
+        print('Erro ao excluir espaço: ${response.statusCode}');
       }
     } catch (error) {
       print('Erro ao fazer DELETE: $error');
     }
   }
 
-  Future<void> _updateTaskInFirebase(Task task) async {
+  Future<void> _updateSpaceInFirebase(Space space) async {
     final url =
-        'https://to-do-list-276e6-default-rtdb.firebaseio.com/tasks/${task.key}.json';
+        'https://reservas-45109-default-rtdb.firebaseio.com/spaces/${space.key}.json';
 
     try {
       final response = await http.put(
         Uri.parse(url),
         body: json.encode({
-          'title': task.title,
-          'description': task.description,
-          'category': task.category,
-          'dueDate': task.dueDate,
-          'priority': task.priority,
-          'isCompleted': task.isCompleted,
+          'title': space.title,
+          'description': space.description,
+          'category': space.category,
+          'dueDate': space.dueDate,
+          'priority': space.priority,
+          'isCompleted': space.isCompleted,
         }),
       );
 
       if (response.statusCode == 200) {
-        print('Tarefa atualizada com sucesso!');
+        print('Espaço atualizado com sucesso!');
       } else {
-        print('Erro ao atualizar tarefa: ${response.statusCode}');
+        print('Erro ao atualizar espaço: ${response.statusCode}');
       }
     } catch (error) {
       print('Erro ao fazer PUT: $error');
@@ -255,34 +190,22 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    List<Task> filteredTasks = tasks.where((task) {
-      if (showOnlyIncomplete && task.isCompleted) return false;
-      return currentCategory == 'Todas' || task.category == currentCategory;
-    }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-Do List'),
+        title: const Text('Reservas'),
         actions: [
           Row(
             children: [
               const Text(
-                'Nova Categoria',
+                'Usuario',
                 style: TextStyle(color: Colors.white, fontSize: 14),
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.white),
                 tooltip: 'Adicionar Categoria',
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CategoryManagement(
-                        onCategoryUpdated:
-                            _fetchCategoriesFromFirebase,
-                      ),
-                    ),
-                  );
+                  // a implementar
                 },
               )
             ],
@@ -293,47 +216,14 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(25, 20, 15, 10),
+            padding: const EdgeInsets.fromLTRB(25, 20, 15, 0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  'Categoria: $currentCategory',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        showOnlyIncomplete
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                      tooltip: showOnlyIncomplete
-                          ? 'Mostrar todas as tarefas'
-                          : 'Mostrar apenas incompletas',
-                      onPressed: () {
-                        setState(() {
-                          showOnlyIncomplete = !showOnlyIncomplete;
-                        });
-                      },
-                    ),
-                    CategoryFilter(
-                      currentCategory: currentCategory,
-                      onCategoryChanged: (category) {
-                        setState(() {
-                          currentCategory = category;
-                        });
-                      },
-                      categories: categories,
-                    ),
-                    TaskFilter(
-                      onFilterSelected: _filterTasks,
+                    SpaceFilter(
+                      onFilterSelected: _filterSpaces,
                     ),
                   ],
                 ),
@@ -342,75 +232,24 @@ class _HomeState extends State<Home> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredTasks.length + 1,
+              itemCount: spaces.length + 1,
               itemBuilder: (context, index) {
-                if (index == filteredTasks.length) {
+                if (index == spaces.length) {
                   // Adiciona o espaço ao final da lista
                   return const SizedBox(
-                    height:
-                        80,
+                    height: 80,
                   );
                 }
-                
-                return TaskCard(
-                  task: filteredTasks[index],
-                  onEdit: () => _editTask(filteredTasks[index]),
-                  onDelete: () => _deleteTask(filteredTasks[index]),
-                  onToggleComplete: () =>
-                      _toggleTaskComplete(filteredTasks[index]),
+
+                return SpaceCard(
+                  space: spaces[index],
+                  onEdit: () => _editSpace(spaces[index]),
                 );
               },
             ),
           )
         ],
-      ),
-      floatingActionButton: Stack(
-        children: [
-          Positioned(
-            left: 30,
-            bottom: 20,
-            child: FloatingActionButton(
-              heroTag: 'importantTasks',
-              onPressed: () {
-                showImportantTasksDialog(context, tasks);
-              },
-              tooltip: 'Tarefas importantes',
-              child: const Icon(Icons.notifications),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            bottom: 20,
-            child: FloatingActionButton.extended(
-              heroTag: 'newTask',
-              icon: const Icon(Icons.add),
-              label: const Text('Nova Tarefa'),
-              onPressed: () {
-                AddTask_dialog(
-                  context,
-                  (title, description, dueDate, priority, category) {
-                    final newTask = Task(
-                      key: '',
-                      title: title,
-                      description: description,
-                      category: category.isEmpty ? 'Sem Categoria' : category,
-                      dueDate: dueDate,
-                      priority: priority,
-                      isCompleted: false, // Tarefa inicia como incompleta
-                    );
-                    
-                    _addTaskToFirebase(newTask);
-                  },
-                  availableCategories:
-                      categories,
-                  isEditMode: false,
-                  task: null,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+      )
     );
   }
 }

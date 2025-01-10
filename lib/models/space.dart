@@ -1,4 +1,4 @@
-class Task {
+class Space {
   String key;
   String title;
   String description;
@@ -7,7 +7,7 @@ class Task {
   String priority;
   bool isCompleted;
 
-  Task({
+  Space({
     required this.key,
     required this.title,
     required this.description,

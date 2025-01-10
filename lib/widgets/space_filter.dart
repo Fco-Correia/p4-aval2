@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class TaskFilter extends StatelessWidget {
+class SpaceFilter extends StatelessWidget {
   final Function(String) onFilterSelected;
 
-  const TaskFilter({required this.onFilterSelected, Key? key}) : super(key: key);
+  const SpaceFilter({required this.onFilterSelected, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
