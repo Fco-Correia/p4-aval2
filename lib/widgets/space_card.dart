@@ -4,11 +4,15 @@ import '../models/space.dart';
 class SpaceCard extends StatelessWidget {
   final Space space;
   final VoidCallback onEdit;
+  final VoidCallback onDetails; // Adiciona callback para detalhes
+  final bool isUser; // Indica se o papel atual é de "Usuário"
 
   const SpaceCard({
     super.key,
     required this.space,
     required this.onEdit,
+    required this.onDetails,
+    required this.isUser,
   });
 
   Color getStatusColor(String status) {
@@ -31,42 +35,38 @@ class SpaceCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
-      child: ListTile(
-        title: Text(
-          space.nomeEspaco,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
-        subtitle: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Exibe a capacidade
+            Text(
+              space.nomeEspaco,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 6),
             Text(
               'Capacidade: ${space.capacidade}',
               style: const TextStyle(
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 4),
-            // Exibe a disponibilidade
+            const SizedBox(height: 6),
             Text(
               space.disponibilidadeFormatada,
               style: const TextStyle(
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 4),
-            // Exibe o status em uma "caixinha"
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: getStatusColor(space.status),
                 borderRadius: BorderRadius.circular(10),
-                border: space.status == 'Inativo'
-                    ? Border.all(color: Colors.black, width: 1) // Realça borda
-                    : null,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -87,15 +87,43 @@ class SpaceCard extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.blue),
-              onPressed: onEdit,
-            )
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (isUser)
+                  ElevatedButton.icon(
+                    onPressed: onEdit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    icon: const Icon(Icons.edit, color: Colors.white, size: 18),
+                    label: const Text('Editar'),
+                  ),
+                if (!isUser && space.status == 'Ativo') // Exibe apenas se estiver "Ativo"
+                  ElevatedButton.icon(
+                    onPressed: onDetails,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Colors.orange, // Cor mais chamativa para o botão
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    icon: const Icon(Icons.calendar_today,
+                        color: Colors.white, size: 18), // Ícone atualizado
+                    label: const Text(
+                      'Faça sua Reserva',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ), // Texto atualizado
+                  ),
+              ],
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todolist/screens/SpaceDetailsScreen.dart';
 import '../models/space.dart';
 import '../widgets/space_card.dart';
 import '../widgets/role_switch_button.dart'; // Importando o novo widget
@@ -26,7 +27,8 @@ class _HomeState extends ConsumerState<Home> {
     final spaces = ref.watch(spacesProvider);
     final spacesNotifier = ref.read(spacesProvider.notifier);
     final isUser = spacesNotifier.isUser; // Obter o papel atual
-    final isLoading = spacesNotifier.isLoading; // Obter o estado de carregamento
+    final isLoading =
+        spacesNotifier.isLoading; // Obter o estado de carregamento
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +49,7 @@ class _HomeState extends ConsumerState<Home> {
             padding: const EdgeInsets.fromLTRB(25, 20, 15, 0),
           ),
           Expanded(
-            child: isLoading // Se estiver carregando, mostra o indicador
+            child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: spaces.length + 1,
@@ -60,8 +62,11 @@ class _HomeState extends ConsumerState<Home> {
 
                       return SpaceCard(
                         space: spaces[index],
+                        isUser: isUser,
                         onEdit: () =>
                             _editSpace(context, spaces[index], spacesNotifier),
+                        onDetails: () =>
+                            _navigateToDetails(context, spaces[index]),
                       );
                     },
                   ),
@@ -84,6 +89,15 @@ class _HomeState extends ConsumerState<Home> {
           },
         );
       },
+    );
+  }
+
+  void _navigateToDetails(BuildContext context, Space space) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SpaceDetailsScreen(space: space),
+      ),
     );
   }
 }
