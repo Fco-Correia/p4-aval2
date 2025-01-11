@@ -99,14 +99,26 @@ class _EditSpaceDialogState extends State<EditSpaceDialog> {
           onPressed: () {
             Navigator.of(context).pop(); // Fecha o diálogo sem salvar
           },
-          child: const Text('Cancelar'),
+          child: const Text(
+            'Cancelar',
+            style: TextStyle(
+              color: Colors.red, // Cor mais destacada para "Cancelar"
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        ElevatedButton(
+        TextButton(
           onPressed: () {
             widget.onStatusUpdated(selectedStatus); // Retorna o novo status
             Navigator.of(context).pop(); // Fecha o diálogo
           },
-          child: const Text('Salvar'),
+          child: const Text(
+            'Salvar',
+            style: TextStyle(
+              color: Colors.green, // Cor verde para "Salvar"
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );

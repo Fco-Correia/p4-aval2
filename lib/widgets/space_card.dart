@@ -101,9 +101,15 @@ class SpaceCard extends StatelessWidget {
                       ),
                     ),
                     icon: const Icon(Icons.edit, color: Colors.white, size: 18),
-                    label: const Text('Editar'),
+                    label: const Text(
+                      'Editar',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                if (!isUser && space.status == 'Ativo') // Exibe apenas se estiver "Ativo"
+                if (!isUser &&
+                    space.status == 'Ativo') // Exibe apenas se estiver "Ativo"
                   ElevatedButton.icon(
                     onPressed: onDetails,
                     style: ElevatedButton.styleFrom(
