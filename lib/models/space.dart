@@ -19,3 +19,4 @@ class Space {
     return 'Disponibilidade: $disponibilidade horários disponíveis';
   }
 }
+

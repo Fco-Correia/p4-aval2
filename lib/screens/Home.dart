@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todolist/screens/SpaceDetailsScreen.dart';
-import 'UserReservationsScreen.dart'; // Importando a tela de reservas do usuário
+import 'UserReservationsScreen.dart';
 import '../models/space.dart';
 import '../widgets/space_card.dart';
-import '../widgets/role_switch_button.dart'; // Importando o novo widget
+import '../widgets/role_switch_button.dart';
 import 'package:todolist/dialogs/edit_space_dialog.dart';
 import '../providers/spaces_provider.dart';
 
@@ -27,18 +27,17 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     final spaces = ref.watch(spacesProvider);
     final spacesNotifier = ref.read(spacesProvider.notifier);
-    final isUser = spacesNotifier.isUser; // Obter o papel atual
-    final isLoading =
-        spacesNotifier.isLoading; // Obter o estado de carregamento
+    final isUser = spacesNotifier.isUser;
+    final isLoading = spacesNotifier.isLoading;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reservas'),
         actions: [
           RoleSwitchButton(
-            isUser: isUser, // Passa o papel atual
+            isUser: isUser,
             onPressed: () {
-              spacesNotifier.toggleUserRole(); // Alterna o papel
+              spacesNotifier.toggleUserRole(); // Alterna o usuario
             },
           ),
         ],
@@ -46,8 +45,8 @@ class _HomeState extends ConsumerState<Home> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 20, 15, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(25, 20, 15, 0),
           ),
           Expanded(
             child: isLoading
@@ -61,9 +60,8 @@ class _HomeState extends ConsumerState<Home> {
                         );
                       }
 
-                      // Agora a lógica está invertida
                       if (!isUser && spaces[index].status == 'Inativo') {
-                        return SizedBox
+                        return const SizedBox
                             .shrink(); // Não exibe o card se for 'Inativo' e o papel for 'Usuário'
                       }
 
@@ -83,13 +81,13 @@ class _HomeState extends ConsumerState<Home> {
       floatingActionButton: !isUser
           ? FloatingActionButton.extended(
               onPressed: () => _navigateToUserReservations(context),
-              icon: const Icon(Icons.calendar_today), // Ícone de calendário
+              icon: const Icon(Icons.calendar_today),
               label: const Text(
                 'Minhas Reservas',
                 style: TextStyle(fontSize: 12),
-                ), // Texto ao lado do ícone
+                )
             )
-          : null,
+          : null
     );
   }
 

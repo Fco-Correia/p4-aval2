@@ -63,7 +63,6 @@ class SpacesNotifier extends StateNotifier<List<Space>> {
     try {
       isLoading = true;
 
-      // Atualiza a disponibilidade
       space.disponibilidade = _calculateAvailableTimes(space);
 
       final response = await http.put(
@@ -90,7 +89,6 @@ class SpacesNotifier extends StateNotifier<List<Space>> {
     }
   }
 
-  // Calcula a quantidade de horários disponíveis
   int _calculateAvailableTimes(Space space) {
     int availableCount = 7; // Número inicial de horários disponíveis
 

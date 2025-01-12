@@ -110,7 +110,6 @@ class SpaceDetailsScreen extends ConsumerWidget {
                     // Atualiza a disponibilidade
                     await spacesNotifier.updateSpaceInFirebase(space);
 
-                    // Fecha o diálogo e reabre para atualizar
                     Navigator.pop(context);
                     _showAvailableTimes(context, ref, spacesNotifier);
                   },

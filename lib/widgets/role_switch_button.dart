@@ -13,36 +13,36 @@ class RoleSwitchButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 16), // Padding ajustado
+      padding: const EdgeInsets.only(right: 16),
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 48, 29, 101), // Cor ajustada para um azul suave
+          backgroundColor: const Color.fromARGB(255, 48, 29, 101),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // Impede que o Row ocupe toda a largura
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              isUser ? Icons.person : Icons.admin_panel_settings, // Ícone alternado com operador ternário
+              isUser ? Icons.person : Icons.admin_panel_settings,
               color: Colors.white,
               size: 18,
             ),
-            const SizedBox(width: 8), // Espaço entre o ícone e o texto
+            const SizedBox(width: 8),
             Text(
-              isUser ? 'Trocar para Usuário' : 'Trocar para Administrador', // Texto alternado com operador ternário
+              isUser ? 'Trocar para Usuário' : 'Trocar para Administrador',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 8), // Espaço entre o texto e o ícone de troca
+            const SizedBox(width: 8),
             const Icon(
-              Icons.swap_horiz, // Outro ícone alternado (opcional)
+              Icons.swap_horiz,
               color: Colors.white,
               size: 18,
             ),

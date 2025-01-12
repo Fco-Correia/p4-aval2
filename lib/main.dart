@@ -7,11 +7,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // Marcando o construtor como const
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope( // Envolvendo o aplicativo com o ProviderScope
+    return ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: const Home(),

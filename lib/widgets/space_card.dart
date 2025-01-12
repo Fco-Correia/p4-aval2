@@ -4,8 +4,8 @@ import '../models/space.dart';
 class SpaceCard extends StatelessWidget {
   final Space space;
   final VoidCallback onEdit;
-  final VoidCallback onDetails; // Adiciona callback para detalhes
-  final bool isUser; // Indica se o papel atual é de "Usuário"
+  final VoidCallback onDetails;
+  final bool isUser;
 
   const SpaceCard({
     super.key,
@@ -110,18 +110,18 @@ class SpaceCard extends StatelessWidget {
                     ),
                   ),
                 if (!isUser &&
-                    space.status == 'Ativo') // Exibe apenas se estiver "Ativo"
+                    space.status == 'Ativo')
                   ElevatedButton.icon(
                     onPressed: onDetails,
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          Colors.orange, // Cor mais chamativa para o botão
+                          Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     icon: const Icon(Icons.calendar_today,
-                        color: Colors.white, size: 18), // Ícone atualizado
+                        color: Colors.white, size: 18),
                     label: const Text(
                       'Faça sua Reserva',
                       style: TextStyle(
