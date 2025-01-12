@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:todolist/screens/SpaceDetailsScreen.dart';
+import 'package:reservas/dialogs/edit_space_dialog.dart';
+import 'package:reservas/screens/SpaceDetailsScreen.dart';
 import 'UserReservationsScreen.dart';
 import '../models/space.dart';
 import '../widgets/space_card.dart';
 import '../widgets/role_switch_button.dart';
-import 'package:todolist/dialogs/edit_space_dialog.dart';
 import '../providers/spaces_provider.dart';
 
 class Home extends ConsumerStatefulWidget {
