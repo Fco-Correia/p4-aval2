@@ -11,7 +11,8 @@ class SpaceDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spacesNotifier = ref.read(spacesProvider.notifier);
-    final updatedSpace = ref.watch(spacesProvider).firstWhere((s) => s.key == space.key);
+    final updatedSpace =
+        ref.watch(spacesProvider).firstWhere((s) => s.key == space.key);
 
     return Scaffold(
       appBar: AppBar(
@@ -76,49 +77,47 @@ class SpaceDetailsScreen extends ConsumerWidget {
       builder: (context) {
         return AlertDialog(
           title: const Text('Horários disponíveis'),
-          content: spacesNotifier.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: space.horarios.entries.map((entry) {
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              entry.key,
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            entry.value ? 'Disponível' : 'Indisponível',
-                            style: TextStyle(
-                              color: entry.value ? Colors.green : Colors.red,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: space.horarios.entries.map((entry) {
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.key,
+                        style: const TextStyle(fontSize: 14),
                       ),
-                      trailing: Checkbox(
-                        value: !entry.value,
-                        shape: const CircleBorder(),
-                        activeColor: Colors.green,
-                        onChanged: (bool? newValue) async {
-                          space.horarios[entry.key] = !(newValue ?? false);
-
-                          // Atualiza a disponibilidade
-                          await spacesNotifier.updateSpaceInFirebase(space);
-
-                          // Fecha o diálogo e reabre para atualizar
-                          Navigator.pop(context);
-                          _showAvailableTimes(context, ref, spacesNotifier);
-                        },
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      entry.value ? 'Disponível' : 'Indisponível',
+                      style: TextStyle(
+                        color: entry.value ? Colors.green : Colors.red,
+                        fontSize: 10,
                       ),
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
+                trailing: Checkbox(
+                  value: !entry.value,
+                  shape: const CircleBorder(),
+                  activeColor: Colors.green,
+                  onChanged: (bool? newValue) async {
+                    space.horarios[entry.key] = !(newValue ?? false);
+
+                    // Atualiza a disponibilidade
+                    await spacesNotifier.updateSpaceInFirebase(space);
+
+                    // Fecha o diálogo e reabre para atualizar
+                    Navigator.pop(context);
+                    _showAvailableTimes(context, ref, spacesNotifier);
+                  },
+                ),
+              );
+            }).toList(),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
