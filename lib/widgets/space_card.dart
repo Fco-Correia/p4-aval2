@@ -105,6 +105,7 @@ class SpaceCard extends StatelessWidget {
                       'Editar',
                       style: TextStyle(
                         color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

@@ -10,6 +10,9 @@ class SpaceDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final spacesNotifier = ref.read(spacesProvider.notifier);
+    final updatedSpace = ref.watch(spacesProvider).firstWhere((s) => s.key == space.key);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(space.nomeEspaco),
@@ -23,6 +26,11 @@ class SpaceDetailsScreen extends ConsumerWidget {
               'Capacidade: ${space.capacidade}',
               style: const TextStyle(fontSize: 18),
             ),
+            const SizedBox(height: 8),
+            Text(
+              'Disponibilidade: ${updatedSpace.disponibilidade} horários disponíveis',
+              style: const TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 16),
             Text(
               'Status: ${space.status}',
@@ -34,12 +42,12 @@ class SpaceDetailsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                _showAvailableTimes(context, ref);
+                _showAvailableTimes(context, ref, spacesNotifier);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent, // Cor do fundo do botão
+                backgroundColor: Colors.blueAccent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8), // Borda arredondada
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -47,7 +55,7 @@ class SpaceDetailsScreen extends ConsumerWidget {
               child: const Text(
                 'Escolha seu horário',
                 style: TextStyle(
-                  color: Colors.white, // Cor do texto
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -58,19 +66,18 @@ class SpaceDetailsScreen extends ConsumerWidget {
     );
   }
 
-  void _showAvailableTimes(BuildContext context, WidgetRef ref) {
-    final spacesNotifier = ref.read(spacesProvider.notifier);
-    final isLoading = spacesNotifier.isLoading;
-
+  void _showAvailableTimes(
+    BuildContext context,
+    WidgetRef ref,
+    SpacesNotifier spacesNotifier,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Horários disponíveis'),
-          content: isLoading
-              ? const Center(
-                  child:
-                      CircularProgressIndicator()) // Exibe o loading enquanto carrega
+          content: spacesNotifier.isLoading
+              ? const Center(child: CircularProgressIndicator())
               : Column(
                   mainAxisSize: MainAxisSize.min,
                   children: space.horarios.entries.map((entry) {
@@ -104,9 +111,9 @@ class SpaceDetailsScreen extends ConsumerWidget {
                           // Atualiza a disponibilidade
                           await spacesNotifier.updateSpaceInFirebase(space);
 
-                          // Fechar o diálogo e chamar novamente para atualizar a lista
+                          // Fecha o diálogo e reabre para atualizar
                           Navigator.pop(context);
-                          _showAvailableTimes(context, ref);
+                          _showAvailableTimes(context, ref, spacesNotifier);
                         },
                       ),
                     );
