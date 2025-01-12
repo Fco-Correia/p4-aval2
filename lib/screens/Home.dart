@@ -27,8 +27,7 @@ class _HomeState extends ConsumerState<Home> {
     final spaces = ref.watch(spacesProvider);
     final spacesNotifier = ref.read(spacesProvider.notifier);
     final isUser = spacesNotifier.isUser; // Obter o papel atual
-    final isLoading =
-        spacesNotifier.isLoading; // Obter o estado de carregamento
+    final isLoading = spacesNotifier.isLoading; // Obter o estado de carregamento
 
     return Scaffold(
       appBar: AppBar(
@@ -58,6 +57,11 @@ class _HomeState extends ConsumerState<Home> {
                         return const SizedBox(
                           height: 80,
                         );
+                      }
+
+                      // Agora a lógica está invertida
+                      if (!isUser && spaces[index].status == 'Inativo') {
+                        return SizedBox.shrink(); // Não exibe o card se for 'Inativo' e o papel for 'Usuário'
                       }
 
                       return SpaceCard(

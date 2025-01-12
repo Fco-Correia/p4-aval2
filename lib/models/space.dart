@@ -4,6 +4,7 @@ class Space {
   int capacidade;
   int disponibilidade;
   String status;
+  Map<String, bool> horarios;
 
   Space({
     required this.key,
@@ -11,6 +12,7 @@ class Space {
     required this.capacidade,
     required this.disponibilidade,
     required this.status,
+    required this.horarios,
   });
 
   String get disponibilidadeFormatada {

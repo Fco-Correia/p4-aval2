@@ -10,15 +10,15 @@ final spacesProvider =
 
 class SpacesNotifier extends StateNotifier<List<Space>> {
   bool isUser = true;
-  bool isLoading = false; // Controla o estado de carregamento
+  bool isLoading = false;
 
   SpacesNotifier() : super([]) {
     fetchSpacesFromFirebase();
   }
 
   Future<void> fetchSpacesFromFirebase() async {
-    isLoading = true; // Inicia o carregamento
-    state = List.from(state); // Atualiza o estado
+    isLoading = true;
+    state = List.from(state);
 
     const url =
         'https://reservas-45109-default-rtdb.firebaseio.com/spaces.json';
@@ -38,6 +38,7 @@ class SpacesNotifier extends StateNotifier<List<Space>> {
               disponibilidade:
                   int.tryParse(spaceData['disponibilidade'].toString()) ?? 0,
               status: spaceData['status'] ?? 'Inativo',
+              horarios: Map<String, bool>.from(spaceData['horarios'] ?? {}),
             ));
           });
 
@@ -49,16 +50,21 @@ class SpacesNotifier extends StateNotifier<List<Space>> {
     } catch (error) {
       print('Erro ao fazer GET: $error');
     } finally {
-      isLoading = false; // Finaliza o carregamento
-      state = List.from(state); // Atualiza o estado
+      isLoading = false;
+      state = List.from(state);
     }
   }
 
+  // Atualiza o espaço no Firebase
   Future<void> updateSpaceInFirebase(Space space) async {
     final url =
         'https://reservas-45109-default-rtdb.firebaseio.com/spaces/${space.key}.json';
+
     try {
-      isLoading = true; // Inicia o carregamento durante a atualização
+      isLoading = true;
+
+      // Atualiza a disponibilidade
+      space.disponibilidade = _calculateAvailableTimes(space);
 
       final response = await http.put(
         Uri.parse(url),
@@ -67,6 +73,7 @@ class SpacesNotifier extends StateNotifier<List<Space>> {
           'capacidade': space.capacidade,
           'disponibilidade': space.disponibilidade,
           'status': space.status,
+          'horarios': space.horarios,
         }),
       );
 
@@ -78,11 +85,25 @@ class SpacesNotifier extends StateNotifier<List<Space>> {
       }
     } catch (error) {
       print('Erro ao fazer PUT: $error');
+    } finally {
+      isLoading = false;
     }
+  }
+
+  // Calcula a quantidade de horários disponíveis
+  int _calculateAvailableTimes(Space space) {
+    int availableCount = 7; // Número inicial de horários disponíveis
+
+    // Conta os horários disponíveis
+    space.horarios.forEach((key, value) {
+      if (!value) availableCount--; // Se o horário for marcado como indisponível, diminui
+    });
+
+    return availableCount;
   }
 
   void toggleUserRole() {
     isUser = !isUser;
-    state = List.from(state); // Força a atualização da lista
+    state = List.from(state);
   }
 }

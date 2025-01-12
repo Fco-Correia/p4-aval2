@@ -26,10 +26,10 @@ class RoleSwitchButton extends StatelessWidget {
             ),
             const SizedBox(width: 8), // Espaço entre o ícone do usuário e o texto
             Text(
-              isUser ? 'Administrador' : 'Usuário',
+              isUser ? 'Trocar para Usuário' : 'Trocar para Administrador',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
