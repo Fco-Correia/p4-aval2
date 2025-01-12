@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todolist/screens/SpaceDetailsScreen.dart';
+import 'UserReservationsScreen.dart'; // Importando a tela de reservas do usuário
 import '../models/space.dart';
 import '../widgets/space_card.dart';
 import '../widgets/role_switch_button.dart'; // Importando o novo widget
@@ -27,7 +28,8 @@ class _HomeState extends ConsumerState<Home> {
     final spaces = ref.watch(spacesProvider);
     final spacesNotifier = ref.read(spacesProvider.notifier);
     final isUser = spacesNotifier.isUser; // Obter o papel atual
-    final isLoading = spacesNotifier.isLoading; // Obter o estado de carregamento
+    final isLoading =
+        spacesNotifier.isLoading; // Obter o estado de carregamento
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +63,8 @@ class _HomeState extends ConsumerState<Home> {
 
                       // Agora a lógica está invertida
                       if (!isUser && spaces[index].status == 'Inativo') {
-                        return SizedBox.shrink(); // Não exibe o card se for 'Inativo' e o papel for 'Usuário'
+                        return SizedBox
+                            .shrink(); // Não exibe o card se for 'Inativo' e o papel for 'Usuário'
                       }
 
                       return SpaceCard(
@@ -77,6 +80,16 @@ class _HomeState extends ConsumerState<Home> {
           ),
         ],
       ),
+      floatingActionButton: !isUser
+          ? FloatingActionButton.extended(
+              onPressed: () => _navigateToUserReservations(context),
+              icon: const Icon(Icons.calendar_today), // Ícone de calendário
+              label: const Text(
+                'Minhas Reservas',
+                style: TextStyle(fontSize: 12),
+                ), // Texto ao lado do ícone
+            )
+          : null,
     );
   }
 
@@ -101,6 +114,15 @@ class _HomeState extends ConsumerState<Home> {
       context,
       MaterialPageRoute(
         builder: (context) => SpaceDetailsScreen(space: space),
+      ),
+    );
+  }
+
+  void _navigateToUserReservations(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserReservationsScreen(),
       ),
     );
   }
